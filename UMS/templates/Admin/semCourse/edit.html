@@ -1,0 +1,97 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Semester Course | Edit{% endblock %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000;
+        background-color: #fff;
+    }
+    .toast-title {
+        color: #000;
+    }
+    .toast-message {
+        color: #000;
+    }
+    .toast-close-button {
+        color: #000;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Edit Semester Course <i class="feather icon-edit"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'semesterCourse_edit' Scourses.id %}" enctype="multipart/form-data" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="sem_course_id">Semester Course Code *</label>
+                                            <input type="text" name="sem_course_id" value="{{ form.sem_course_id.value }}" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="semester">Semester Name *</label>
+                                            <select name="semester" class="form-control" id="semester">
+                                                <option value="">- Select -</option>
+                                                {% for semester in semesters %}
+                                                    <option value="{{ semester.id }}" {% if semester.id == form.semester.value %}selected{% endif %}>
+                                                        {{ semester.semester_name|upper }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>                                                                     
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="course">Course Name *</label>
+                                            <select name="course" class="form-control" id="course">
+                                                <option value="">- Select -</option>
+                                                {% for course in courses %}
+                                                    <option value="{{ course.id }}" {% if course.id == form.course.value %}selected{% endif %}>
+                                                        {{ course.name|upper }} - {{ course.id }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="max_students">Max Students *</label>
+                                            <input type="number" name="max_students" value="{{ form.max_students.value }}" class="form-control">
+                                        </div>
+                                    </div>                                                                   
+                                </div>                                
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+$(document).ready(function () {
+    {% if messages %}
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message|escapejs }}");
+        {% endfor %}
+    {% endif %}
+});
+{% endblock %}

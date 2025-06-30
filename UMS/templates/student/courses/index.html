@@ -1,0 +1,186 @@
+{% extends 'student/layouts/app.html' %}
+
+{% block title %}FRAS | My Courses{% endblock %}
+
+{% load static %}
+
+{% block css %}
+<style>
+    .attendance-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        margin-bottom: 20px;
+        border-left: 4px solid #7367F0;
+    }
+    .attendance-card:hover {
+        transform: translateY(-5px);
+    }
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+    }
+    .attendance-percentage {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    .badge-present {
+        background-color: #28a745;
+    }
+    .badge-absent {
+        background-color: #dc3545;
+    }
+    .course-title {
+        font-weight: 600;
+        color: #5e5873;
+    }
+    .course-schedule {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .attendance-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+    .progress {
+        height: 8px;
+        border-radius: 4px;
+    }
+    .progress-bar {
+        border-radius: 4px;
+    }
+    .rotate-180 {
+        transform: rotate(180deg);
+        transition: transform 0.3s ease;
+    }
+    .no-records {
+        color: #6c757d;
+        font-style: italic;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <i class="feather icon-book"></i> My Courses
+                    </h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        {% if error %}
+                            <div class="alert alert-danger">
+                                <i class="feather icon-alert-circle"></i> {{ error }}
+                            </div>
+                        {% elif no_enrollments %}
+                            <div class="alert alert-info">
+                                <i class="feather icon-info"></i> You are not enrolled in any courses yet.
+                            </div>
+                        {% elif enrolled_courses %}
+                            {% for item in enrolled_courses %}
+                            <div class="card attendance-card">
+                                <div class="card-header d-flex justify-content-between align-items-center" 
+                                     data-toggle="collapse" 
+                                     data-target="#attendance{{ item.course.id }}" 
+                                     aria-expanded="false">
+                                    <div>
+                                        <h4 class="course-title mb-0">
+                                            {{ item.course.name }}
+                                        </h4>
+                                        <span class="course-schedule">
+                                            {{ item.schedule }} | Section: {{ item.section }}
+                                        </span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        {% if item.has_attendance %}
+                                            <span class="attendance-percentage mr-3">
+                                                {{ item.attendance_percentage|floatformat:0 }}%
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted mr-3">No attendance marked</span>
+                                        {% endif %}
+                                        <i class="feather icon-chevron-down"></i>
+                                    </div>
+                                </div>
+
+                                <div class="collapse" id="attendance{{ item.course.id }}">
+                                    <div class="card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <p><strong>Faculty:</strong> {{ item.faculty_name }}</p>
+                                                <p><strong>Course Code:</strong> {{ item.course.course_id }}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>Classes Conducted:</strong> {{ item.total_classes }}</p>
+                                                <p><strong>Classes Attended:</strong> {{ item.attended_classes }}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if item.has_attendance %}
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Date</th>
+                                                            <th>Status</th>
+                                                            <th>Fine</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for record in item.enrollment.studentattendance_set.all %}
+                                                        <tr>
+                                                            <td>{{ forloop.counter }}</td>
+                                                            <td>{{ record.attendance_date|date:"Y-m-d" }}</td>
+                                                            <td>
+                                                                <span class="badge {% if record.attendance_status == '1' %}badge-present{% else %}badge-absent{% endif %}">
+                                                                    {% if record.attendance_status == '1' %}Present{% else %}Absent{% endif %}
+                                                                </span>
+                                                            </td>
+                                                            <td>{{ record.fine|default:"-" }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        {% else %}
+                                            <div class="alert alert-info">
+                                                <i class="feather icon-info"></i> No attendance records available for this course yet.
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="feather icon-info"></i> No courses found.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Rotate chevron icon when collapsed/expanded
+        $('.card-header').click(function() {
+            $(this).find('.feather-chevron-down').toggleClass('rotate-180');
+        });
+        
+        // Initialize tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock %}  

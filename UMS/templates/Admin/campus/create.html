@@ -1,0 +1,92 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Add Campus <i class="feather icon-university"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'campus_create' %}" enctype="multipart/form-data" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="university">University Name *</label>
+                                            <select name="university" class="form-control">
+                                                <option value="">-  select -</option>
+                                                {% for university in universities %}
+                                                    <option value="{{ university.id }}">{{ university.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="title">Campus Code *</label>
+                                            <input type="text" name="campus_id " value="" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="title">Campus Name *</label>
+                                            <input type="text" name="name" value="" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="title"> Location *</label>
+                                            <input type="text" name="location" value="" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+$(document).ready(function () {
+    // Display Toastr messages
+    {% if messages %}
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message|escapejs }}");
+        {% endfor %}
+    {% endif %}
+
+});
+{% endblock %}

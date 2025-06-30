@@ -1,0 +1,45 @@
+{% extends 'admin/layouts/app.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section id="attendance-details">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Attendance Details <i class="feather icon-user-check"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Course Name</label>
+                                    <p>{{ attendance.sem_course_id.course.name|upper }} - {{ attendance.sem_course_id.sem_course_id }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Attendance Date</label>
+                                    <p>{{ attendance.attendance_date|date:"j-F-Y" }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Remarks</label>
+                                    <p>{{ attendance.remarks|upper }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a href="{% url 'attendance_index' %}" class="btn btn-primary mr-1 mb-1 waves-effect waves-light"><i class="feather icon-arrow-left"></i> Back to List</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

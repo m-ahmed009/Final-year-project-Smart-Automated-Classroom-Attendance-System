@@ -1,0 +1,180 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Semester | Add{% endblock %}
+
+{% block css %}
+<style>
+
+    .toast {
+        color: #000;
+        background-color: #fff;
+    }
+    .toast-title {
+        color: #000;
+    }
+    .toast-message {
+        color: #000;
+    }
+    .toast-close-button {
+        color: #000;
+    }
+    /* Autocomplete styling */
+    .ui-autocomplete {
+        position: absolute;
+        z-index: 1000;
+        cursor: default;
+        padding: 0;
+        margin-top: 2px;
+        list-style: none;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-shadow: 0 5px 10px rgba(129, 20, 246, 0.31);
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .ui-autocomplete li {
+        padding: 8px 12px;
+    }
+    .ui-autocomplete li:hover, .ui-autocomplete li.ui-state-focus {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+    .ui-helper-hidden-accessible {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Semester Add <i class="feather icon-calendar"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'semester_create' %}" enctype="multipart/form-data" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="semester_name">Semester Name *</label>
+                                            <input type="text" name="semester_name" id="semester_name" value="" class="form-control" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="is_current">Status *</label><br>
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="is_current" name="is_current" value="True" {% if form.is_current.value == 'True' %}checked{% endif %}>
+                                                <label class="custom-control-label" for="is_current">
+                                                    
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                                                                                          
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="start_date">Start Date *</label>
+                                            <input type="date" name="start_date" id="start_date" value="" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="end_date">End Date *</label>
+                                            <input type="date" name="end_date" id="end_date" value="" class="form-control">
+                                        </div>
+                                    </div>                                                                 
+                                </div>                                
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+<!-- Required jQuery and jQuery UI -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
+<script>
+$(document).ready(function () {
+    {% if messages %}
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message|escapejs }}");
+        {% endfor %}
+    {% endif %}
+
+    // Initialize autocomplete
+    $("#semester_name").autocomplete({
+        source: ["Fall", "Spring", "Summer"],
+        minLength: 1,
+        select: function(event, ui) {
+            $(this).val(ui.item.value);
+            calculateEndDate();
+            return false;
+        }
+    });
+
+     // Track if user has manually modified the end date
+    let manualEndDate = false;
+
+    // Calculate end date when either semester name or start date changes
+    $('#semester_name, #start_date').on('change keyup', function() {
+        if (!manualEndDate) {
+            calculateEndDate();
+        }
+    });
+
+    // Detect manual changes to end date
+    $('#end_date').on('change keyup', function() {
+        manualEndDate = true;
+    });
+
+    function calculateEndDate() {
+        const startDate = $('#start_date').val();
+        const semester = $('#semester_name').val().toLowerCase();
+
+        if (!startDate || !semester) return;
+
+        let months = 0;
+        if (semester === 'summer') {
+            months = 2;
+        } else if (semester === 'fall' || semester === 'spring') {
+            months = 4;
+        }
+
+        if (months > 0) {
+            const start = new Date(startDate);
+            const end = new Date(start);
+            end.setMonth(start.getMonth() + months);
+            
+            const formattedDate = end.toISOString().split('T')[0];
+            $('#end_date').val(formattedDate);
+        }
+    }
+
+
+    document.getElementById("is_current").addEventListener("change", function () {
+        const label = document.querySelector("label[for='is_current']");
+        label.textContent = this.checked ? "Active" : "Inactive";
+    });
+});
+</script>
+{% endblock %}

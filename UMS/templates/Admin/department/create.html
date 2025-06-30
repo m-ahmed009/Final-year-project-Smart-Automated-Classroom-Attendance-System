@@ -1,0 +1,91 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Add Department <i class="feather icon-database"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'department_create' %}" enctype="multipart/form-data" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="Campus">Campus Name *</label>
+                                            <select name="campus" class="form-control">
+                                                <option value="">-  select -</option>
+                                                {% for campus in campuses %}
+                                                    <option value="{{ campus.id }}">{{ campus.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="title">Department Code *</label>
+                                            <input type="text" name="department_id" value="" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="title">Department Name *</label>
+                                            <input type="text" name="name" value="" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="description">Department Description *</label>
+                                            <textarea name="description" class="form-control" id="desc" rows="8"></textarea>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+$(document).ready(function () {
+    {% if messages %}
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message|escapejs }}");
+        {% endfor %}
+    {% endif %}
+
+});
+{% endblock %}

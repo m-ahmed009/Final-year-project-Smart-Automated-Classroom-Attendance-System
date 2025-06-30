@@ -1,0 +1,105 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Students | Add{% endblock %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Add Student <i class="feather icon-user-plus"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'Students_create' %}" enctype="multipart/form-data" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="user">User Name *</label>
+                                            <select name="user" class="form-control" id="user">
+                                                <option value="">- Select -</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.username|upper }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="student_id">Student ID *</label>
+                                            <input type="text" name="student_id" class="form-control" id="student_id">
+                                        </div>
+                                    </div>
+                        
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="name">Student Name *</label>
+                                            <input type="text" name="name" class="form-control" id="name">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="email">Email *</label>
+                                            <input type="email" name="email" class="form-control" id="email">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="phone">Phone (+92)*</label>
+                                            <input type="text" name="phone" class="form-control" id="phone">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="address">Address *</label>
+                                            <input type="text" name="address" value="" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="images">Upload 15 Images ( Dimensions 640 x 480)  *</label>
+                                            <input type="file" name="images" class="form-control" id="imageUpload" multiple>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Add Student</button>
+                            </div>
+                        </form>                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+
+
+

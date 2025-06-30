@@ -1,0 +1,54 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Semester Course Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Semester Course Details <i class="feather icon-book"></i></h4>
+                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                <div class="heading-elements">
+                    <ul class="list-inline mb-0">
+                        <li><a data-action="collapse"><i class="feather icon-chevron-down"></i></a></li>
+                        <li><a data-action="expand"><i class="feather icon-maximize"></i></a></li>
+                        <li><a data-action="reload"><i class="feather icon-rotate-cw"></i></a></li>
+                        <li><a data-action="close"><i class="feather icon-x"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <div class="row" style="width: 100%;">
+                                    <div class="col-6">
+                                        <p><h5>Semester Course Code:</h5> {{ Scourses.sem_course_id|upper }}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p><h5>Semester Name:</h5> {{ Scourses.semester.semester_name|upper }}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p><h5>Course Name:</h5> {{ Scourses.course.name|upper }}</p>
+                                    </div>                                                                        
+                                    <div class="col-6">
+                                        <p><h5>Max Students:</h5> {{ Scourses.max_students }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="{% url 'semesterCourse_index' %}" class="btn btn-primary mr-1 mb-1 waves-effect waves-light"><i class="feather icon-arrow-left"></i>  Back to List</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

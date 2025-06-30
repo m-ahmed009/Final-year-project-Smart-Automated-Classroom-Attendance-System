@@ -1,0 +1,94 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Semester Course | Add{% endblock %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Semester Course <i class="feather icon-calendar"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'semesterCourse_create' %}" enctype="multipart/form-data" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="sem_course_id  ">Semester Course Code *</label>
+                                            <input type="text" name="sem_course_id " value="" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="semester">Semester Name *</label>
+                                            <select name="semester" class="form-control" id="semester">
+                                                <option value="">- Select -</option>
+                                                {% for semester in semesters %}
+                                                    <option value="{{ semester.id }}">{{ semester.semester_name|upper }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>                                                                     
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="course">Course Name *</label>
+                                            <select name="course" class="form-control" id="course">
+                                                <option value="">- Select -</option>
+                                                {% for course in courses %}
+                                                    <option value="{{ course.id }}">{{ course.name|upper }} - {{ course.course_id }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="max_students">Max Students *</label>
+                                            <input type="number" name="max_students" value="" class="form-control">
+                                        </div>
+                                    </div>                                                                   
+                            </div>                                
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+$(document).ready(function () {
+    {% if messages %}
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message|escapejs }}");
+        {% endfor %}
+    {% endif %}
+
+});
+{% endblock %}

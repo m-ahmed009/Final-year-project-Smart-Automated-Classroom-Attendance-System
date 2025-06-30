@@ -1,0 +1,140 @@
+{% extends 'admin/layouts/app.html' %}
+{% block title %}Faculty | List{% endblock %}
+{% block css %}
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="column-selectors">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Faculty <i class="feather icon-user-plus"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body card-dashboard">
+                        <div class="table-responsive">
+                            <table class="table table-striped dataex-html5-selectors" id='uni-table'>
+                                <thead>
+                                    <tr>
+                                        <th>User Name</th>
+                                        <th>Faculty Code</th>                                        
+                                        <th>Faculty Name</th>                                
+                                        <th>Title</th>
+                                        <th>Email</th>                                  
+                                        <th>Office</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for faculty in faculties %}
+                                        <tr>
+                                            <td>{{ faculty.user.username|upper }}</td>
+                                            <td>{{ faculty.faculty_id|upper }}</td>                                            
+                                            <td>{{ faculty.name|upper }}</td>
+                                            <td>{{ faculty.title|upper }}</td>
+                                            <td>{{ faculty.email|upper }}</td>
+                                            <td>{{ faculty.office|upper }}</td>  
+                                            <td>
+                                                <a href="{% url 'faculty_show' faculty.id %}" class="btn btn-info btn-sm waves-effect waves-light">
+                                                    <i class="feather icon-search"></i>
+                                                </a>
+                                                <a href="{% url 'faculty_edit' faculty.id %}" class="btn btn-primary btn-sm waves-effect waves-light">
+                                                    <i class="feather icon-edit"></i>
+                                                </a>
+
+                                                <button type="button" onclick="deleteConfirmation({{ faculty.id }})" class="btn btn-danger btn-sm waves-effect waves-light">
+                                                    <i class="feather icon-trash"></i>
+                                                </button>
+
+                                                <form action="{% url 'faculty_delete' faculty.id %}" method="POST" id="deleteForm{{ faculty.id }}" style="display: none;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="6" class="text-center">No Record found <i class="feather icon-file"></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Column selectors with Export Options and print table -->
+{% endblock %}
+
+{% block js %}
+
+<script>
+    $(document).ready(function() {
+        if ($.fn.DataTable.isDataTable('#uni-table')) {
+            $('#uni-table').DataTable().destroy();
+        }
+        
+        $('#uni-table').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    exportOptions: {
+                        columns: ':not(:last)' // Exclude the last column
+                    }
+                },
+                {
+                    extend: 'csv',
+                    exportOptions: {
+                        columns: ':not(:last)' // Exclude the last column
+                    }
+                },
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last)' // Exclude the last column
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last)' // Exclude the last column
+                    }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':not(:last)' // Exclude the last column
+                    }
+                }
+            ]
+        });
+    });
+    
+    
+    function deleteConfirmation(departmentId) {
+        if (confirm('Are you sure you want to delete this department?')) {
+            document.getElementById('deleteForm' + departmentId).submit();
+        }
+    }    
+</script>
+{% endblock %}

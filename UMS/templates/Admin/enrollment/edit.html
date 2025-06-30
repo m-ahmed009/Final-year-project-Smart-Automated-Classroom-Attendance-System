@@ -1,0 +1,106 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Edit Enrollment{% endblock %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000;
+        background-color: #fff;
+    }
+
+    /* Style for the grid container */
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);  /* 5 columns */
+        gap: 20px;  /* Space between images */
+        margin-top: 10px;
+    }
+
+    /* Style for each image container */
+    .image-grid .form-check {
+        text-align: center;
+    }
+
+    /* Optional: Adjust the width and height for a consistent image display */
+    .image-grid img {
+        width: 100px;
+        height: auto;
+        border-radius: 5px;
+        box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Edit Enrollment <i class="feather icon-edit"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'enrollment_edit' pk=enrollment.pk %}" class="number-tab-steps wizard-circle" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="sem_course">Course Name *</label>
+                                            <select name="sem_course" class="form-control" id="sem_course">
+                                                <option value="">- Select -</option>
+                                                {% for sem_course in sem_courses %}
+                                                    <option value="{{ sem_course.id }}" {% if sem_course.id == enrollment.sem_course.id %}selected{% endif %}>
+                                                        {{ sem_course.course.name|upper }} - {{ sem_course.sem_course_id }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="student">Student Name *</label>
+                                            <select name="student" class="form-control" id="student">
+                                                <option value="">- Select -</option>
+                                                {% for student in students %}
+                                                    <option value="{{ student.id }}" {% if student.id == enrollment.student.id %}selected{% endif %}>
+                                                        {{ student.name|upper }} ({{ student.student_id }})
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>                                                                
+                                    <div class="col-sm-12">
+                                        <!-- Row for the label -->
+                                        <div class="row mx-1 mb-2">
+                                            <div class="col">
+                                                <label class="fw-bold">Current Student Images:</label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Row for the images -->
+                                        <div class="row mx-1 d-flex flex-row flex-wrap">
+                                            {% for image in student_images %}
+                                                <div class="mx-2 mb-2">
+                                                    <img src="{{ image.image.url }}" width="80" height="80" style="object-fit: cover;">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

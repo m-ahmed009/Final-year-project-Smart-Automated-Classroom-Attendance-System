@@ -1,0 +1,55 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Student Enrollment Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Student Enrollment Details <i class="feather icon-user"></i></h4>
+                <div class="heading-elements">
+                    <ul class="list-inline mb-0">
+                        <li><a data-action="collapse"><i class="feather icon-chevron-down"></i></a></li>
+                        <li><a data-action="expand"><i class="feather icon-maximize"></i></a></li>
+                        <li><a data-action="reload"><i class="feather icon-rotate-cw"></i></a></li>
+                        <li><a data-action="close"><i class="feather icon-x"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <h5>Student Name:</h5>
+                            <p>{{ enrollment.student.name|upper }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Student ID:</h5>
+                            <p>{{ enrollment.student.student_id }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Course Name:</h5>
+                            <p>{{ enrollment.sem_course.course.name|upper }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Semester:</h5>
+                            <p>{{ enrollment.sem_course.semester }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Enrollment Date:</h5>
+                            <p>{{ enrollment.created_at|date:"d M, Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Status:</h5>
+                            <p>{{ enrollment.status|default:"Active" }}</p>
+                        </div>
+                    </div>
+                    <a href="{% url 'enrollment_card' %}" class="btn btn-primary"><i class="feather icon-arrow-left"></i> Back to List</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'admin/layouts/app.html' %}
+{% block title %}Students | List{% endblock %}
+{% block css %}
+{% load static %}
+
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="column-selectors">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Students <i class="feather icon-user-plus"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body card-dashboard">
+                        <div class="table-responsive">
+                            <table class="table table-striped dataex-html5-selectors" id='department-table-2'>
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Student ID</th>
+                                        <th>Name</th>                                        
+                                        <th>Email</th>                                
+                                        <th>Phone</th>
+                                        <th>Address</th>                                        
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                        <tr>
+                                            <td>
+                                                {% if student.images.first %}
+                                                    <img src="{{ student.images.first.image.url }}" 
+                                                         alt="Student Image" 
+                                                         class="rounded-circle" 
+                                                         width="80" height="80"
+                                                         onerror="this.onerror=null; this.src='{% static 'path/to/default/image.jpg' %}'">
+                                                {% else %}
+                                                    <img src="{% static 'path/to/default/image.jpg' %}" 
+                                                         alt="Default Image" 
+                                                         width="100" height="100">
+                                                {% endif %}
+                                            </td>
+                                            
+                                                                                        
+                                            <td>{{ student.student_id|upper }}</td>
+                                            <td>{{ student.name|upper}}</td>
+                                            <td>{{ student.email|upper }}</td>
+                                            <td>{{ student.phone|upper }}</td>                                                                                                                             
+                                            <td>{{ student.address|slice:":30" }}{% if student.address|length > 30 %}...{% endif %}</td>                                           
+                                            <td>
+                                                <a href="{% url 'Students_show' student.id %}" class="btn btn-info btn-sm waves-effect waves-light">
+                                                    <i class="feather icon-search"></i>
+                                                </a>
+                                                <a href="{% url 'Students_edit' student.id %}" class="btn btn-primary btn-sm waves-effect waves-light">
+                                                    <i class="feather icon-edit"></i>
+                                                </a>
+                            
+                                                <button type="button" onclick="deleteConfirmation({{ student.id }})" class="btn btn-danger btn-sm waves-effect waves-light">
+                                                    <i class="feather icon-trash"></i>
+                                                </button>
+                            
+                                                <form action="{% url 'Students_delete' student.id %}" method="POST" id="deleteForm{{ student.id }}" style="display: none;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="6" class="text-center">No Record found <i class="feather icon-file"></i></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Column selectors with Export Options and print table -->
+{% endblock %}
+
+{% block js %}
+
+<script>
+    $(document).ready(function() {
+        if ($.fn.DataTable.isDataTable('#uni-table')) {
+            $('#uni-table').DataTable().destroy();
+        }
+        
+        $('#uni-table').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    exportOptions: {
+                        columns: ':not(:last)' // Exclude the last column
+                    }
+                },
+                {
+                    extend: 'csv',
+                    exportOptions: {
+                        columns: ':not(:last)' // Exclude the last column
+                    }
+                },
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last)' // Exclude the last column
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last)' // Exclude the last column
+                    }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':not(:last)' // Exclude the last column
+                    }
+                }
+            ]
+        });
+    });
+    
+    
+    function deleteConfirmation(departmentId) {
+        if (confirm('Are you sure you want to delete this student?')) {
+            document.getElementById('deleteForm' + departmentId).submit();
+        }
+    }    
+</script>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'student/layouts/app.html' %}
+
+{% block title %}FRAS | Course Details{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">
+                    <i class="feather icon-book"></i> {{ course.name|upper }}
+                </h4>
+                <a href="{% url 'student_dashboard' %}" class="btn btn-primary btn-sm float-right">
+                    <i class="feather icon-arrow-left"></i> Back to dashboard
+                </a>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="feather icon-info"></i> Course Information</h5>
+                            <hr>
+                            <p><strong>Course ID:</strong> {{ course.course_id }}</p>
+                            <p><strong>Credits:</strong> {{ course.credits }}</p>
+                            <p><strong>Section:</strong> {{ section }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="feather icon-calendar"></i> Schedule Information</h5>
+                            <hr>
+                            <p><strong>Faculty:</strong> {{ faculty_name }}</p>
+                            <p><strong>Schedule:</strong> {{ schedule }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5><i class="feather icon-check-circle"></i> Attendance Records</h5>
+                            <hr>
+                            <p><strong>Number of Classes Conducted:</strong> {{ total_classes }}</p>
+                            <p><strong>Number of Classes Attended:</strong> {{ attended_classes }}</p>
+                            {% comment %} <p><strong>Attendance Percentage:</strong> {{ attendance_percentage|floatformat:2 }}%</p> {% endcomment %}
+                            
+                            {% if attendance_records %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>S.no</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for record in attendance_records %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ record.attendance_date|date:"d M, Y" }}</td>
+                                                <td>
+                                                    {% if record.attendance_status == '1' %}
+                                                        <span class="badge badge-success">Present</span>
+                                                    {% else %}
+                                                        <span class="badge badge-danger">Absent</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ record.remarks|default:"-" }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="feather icon-info"></i> No attendance records available.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

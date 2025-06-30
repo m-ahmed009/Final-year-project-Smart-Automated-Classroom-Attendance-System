@@ -1,0 +1,340 @@
+<!-- BEGIN: Header-->
+{% load static %}
+<nav class="header-navbar navbar-expand-lg navbar navbar-with-menu floating-nav navbar-light navbar-shadow">
+  <div class="navbar-wrapper">
+      <div class="navbar-container content">
+          <div class="navbar-collapse" id="navbar-mobile">
+              <div class="mr-auto float-left bookmark-wrapper d-flex align-items-center">
+                  <ul class="nav navbar-nav">
+                      <li class="nav-item mobile-menu d-xl-none mr-auto">
+                          <a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#">
+                              <i class="ficon feather icon-menu"></i>
+                          </a>
+                      </li>
+                  </ul>
+                  
+                  <ul class="nav navbar-nav">
+                      <li class="nav-item d-none d-lg-block">
+                          <a class="nav-link nav-link-expand">
+                              <i class="ficon feather icon-maximize"></i>
+                          </a>
+                      </li>
+                  </ul>
+              </div>
+              
+              {% if user.is_authenticated %}
+                  <ul class="nav navbar-nav float-right">
+                      <li class="dropdown dropdown-user nav-item">
+                          <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
+                              <div class="user-nav d-sm-flex d-none">
+                                  <span class="user-name text-bold-600">{{ user.username }} 
+                                  </span>
+                              </div>
+                              <span>
+                                {% if request.user.profile.profile_image %}
+                                    <img class="round" src="{{ request.user.profile.profile_image.url }}" alt="avatar" height="40" width="40">
+                                {% else %}
+                                    <img class="round" src="{% static 'app-assets/images/portrait/small/avatar-s-11.jpg' %}" alt="avatar" height="40" width="40">
+                                {% endif %}
+                            </span>
+                                                        
+                          </a>
+                          <div class="dropdown-menu dropdown-menu-right">
+                              <a class="dropdown-item" href="#"><i class="feather icon-user"></i> Edit Profile</a>
+                              <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="{%url 'logout'%}" onclick="logout()"><i class="feather icon-power"></i> Logout</a>
+                          </div>
+                      </li>
+                  </ul>
+              {% endif %}
+          </div>
+      </div>
+  </div>
+</nav>
+
+<!-- END: Header-->
+
+<!-- BEGIN: Main Menu-->
+<div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
+    <div class="navbar-header">
+        <ul class="nav navbar-nav flex-row">
+            <li class="nav-item mr-auto">
+                <a class="navbar-brand" href="{% url 'admin_dashboard' %}">
+                    <div class="brand-logo"><img src="{% static 'images/logo.jpg' %}" alt="branding logo" class='img-fluid mb-3' height='200' width='200'></div>
+                    <h6 class="brand-text mb-0">SACAS</h6>
+                </a>
+            </li>
+            {% comment %} <li class="nav-item nav-toggle">
+                <a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse">
+                    <i class="feather icon-x d-block d-xl-none font-medium-4 primary toggle-icon"></i>
+                    <i class="toggle-icon feather icon-disc font-medium-4 d-none d-xl-block collapse-toggle-icon primary" data-ticon="icon-disc"></i>
+                </a>
+            </li> {% endcomment %}
+        </ul>
+    </div>
+    <div class="shadow-bottom"></div>
+    <div class="main-menu-content">
+        <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+            <li class="nav-item">
+                <a href="{% url 'admin_dashboard' %}" data-page="dashboard">
+                  <i class="feather icon-home"></i>
+                    <span class="menu-title" data-i18n="Dashboard">Dashboard</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{% url 'user_index' %}"> <i class="feather icon-user-plus"></i></i><span class="menu-title" data-i18n="User"> Register Users</span></a>
+                <ul class="menu-content">
+                    <li>
+                        <a href="{% url 'register_user' %}">
+                          <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'user_index' %}">
+                          <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="navigation-header"><span>Academy</span></li>
+
+            <li class="nav-item">
+              <a href="{% url 'university_index' %}"> <i class="feather icon-home"></i></i><span class="menu-title" data-i18n="User">University</span></a>
+              <ul class="menu-content">
+                  <li>
+                      <a href="{% url 'university_create' %}">
+                        <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                      </a>
+                  </li>
+                  <li >
+                      <a href="{% url 'university_index' %}">
+                        <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                      </a>
+                  </li>
+              </ul>
+            </li>
+
+            <li class="nav-item">
+                <a href="{% url 'campus_index' %}"> <i class="feather icon-home"></i></i><span class="menu-title" data-i18n="User">campus</span></a>
+                <ul class="menu-content">
+                    <li>
+                        <a href="{% url 'campus_create' %}">
+                          <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'campus_index' %}">
+                          <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                        </a>
+                    </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'department_index' %}"> <i class="feather icon-database"></i></i><span class="menu-title" data-i18n="User">Departments</span></a>
+                <ul class="menu-content">
+                    <li>
+                        <a href="{% url 'department_create' %}">
+                          <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'department_index' %}">
+                          <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                        </a>
+                    </li>
+                    <li >
+                      <a href="{% url 'departAssign_create' %}">
+                        <i class="feather icon-plus-circle"></i><span class="menu-item" data-i18n="View">AssignDepart</span>
+                      </a>
+                  </li>                    
+                    <li >
+                      <a href="{% url 'departAssign_index' %}">
+                        <i class="feather icon-eye"></i><span class="menu-item" data-i18n="View">AssignDepart View</span>
+                      </a>
+                  </li>
+                </ul>
+              </li>
+
+              <li class="nav-item">
+                <a href="{% url 'programs_index' %}"> <i class="feather icon-archive"></i></i><span class="menu-title" data-i18n="User">Programs</span></a>
+                <ul class="menu-content">
+                    <li>
+                        <a href="{% url 'program_create' %}">
+                          <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'programs_index' %}">
+                          <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                        </a>
+                    </li>
+                </ul>
+              </li>
+
+              <li class="nav-item">
+                <a href="{% url 'course_index' %}"> <i class="feather icon-book"></i></i><span class="menu-title" data-i18n="User">Courses</span></a>
+                <ul class="menu-content">
+                    <li>
+                        <a href="{% url 'course_create' %}">
+                          <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'course_index' %}">
+                          <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                        </a>
+                    </li>
+                     <li >
+                      <a href="{% url 'Assigncourse_create' %}">
+                        <i class="feather icon-plus-circle"></i><span class="menu-item" data-i18n="View">Assign Course</span>
+                      </a>
+                  </li>
+                  <li >
+                    <a href="{% url 'Assigncourse_index' %}">
+                      <i class="feather icon-eye"></i><span class="menu-item" data-i18n="View">Assign Course View</span>
+                    </a>
+                </li>
+                </ul>
+              </li>
+
+
+              <li class="nav-item">
+                <a href="{% url 'faculty_index' %}"> <i class="feather icon-user-plus"></i></i><span class="menu-title" data-i18n="User">Faculty</span></a>
+                <ul class="menu-content">
+                    <li>
+                        <a href="{% url 'faculty_create' %}">
+                          <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'faculty_index' %}">
+                          <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                        </a>
+                    </li>
+                </ul>
+              </li>
+
+
+              <li class="nav-item">
+                <a href="{% url 'Students_index' %}"> <i class="feather icon-user-plus"></i></i><span class="menu-title" data-i18n="User">Students</span></a>
+                <ul class="menu-content">
+                    <li>
+                        <a href="{% url 'Students_create' %}">
+                          <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'Students_index' %}">
+                          <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                        </a>
+                    </li>
+                </ul>
+              </li>
+
+              <li class="nav-item">
+                <a href="{% url 'semester_index' %}"> <i class="feather icon-calendar"></i></i><span class="menu-title" data-i18n="User">Semester</span></a>
+                <ul class="menu-content">
+                    <li>
+                        <a href="{% url 'semester_create' %}">
+                          <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'semester_index' %}">
+                          <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                        </a>
+                    </li>
+                    <li >
+                      <a href="{% url 'semesterCourse_create' %}">
+                        <i class="feather icon-plus-circle"></i><span class="menu-item" data-i18n="View">SemCourse Add</span>
+                      </a>
+                  </li>
+                  <li >
+                    <a href="{% url 'semesterCourse_index' %}">
+                      <i class="feather icon-eye"></i><span class="menu-item" data-i18n="View">SemCourse View</span>
+                    </a>
+                </li>                                      
+                </ul>
+              </li>
+
+              <li class="nav-item">
+                <a href="{% url 'enrollment_index' %}"> <i class="feather icon-folder-plus"></i></i><span class="menu-title" data-i18n="User">Enrollment</span></a>
+                <ul class="menu-content">
+                    <li>
+                        <a href="{% url 'enrollment_create' %}">
+                          <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'enrollment_card' %}">
+                          <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                        </a>
+                    </li>
+                </ul>
+              </li>   
+
+
+              <li class="nav-item">
+                <a href="{% url 'attendance_index' %}"> <i class="feather icon-user-check"></i></i><span class="menu-title" data-i18n="User">Attendance</span></a>
+                <ul class="menu-content">
+                    <li>
+                        <a href="{% url 'attendance_create' %}">
+                          <i class="feather icon-plus"></i><span class="menu-item" data-i18n="List">Add New</span>
+                        </a>
+                    </li>
+                    <li >
+                        <a href="{% url 'attendance_index' %}">
+                          <i class="feather icon-list"></i><span class="menu-item" data-i18n="View">List</span>
+                        </a>
+                    </li>
+                </ul>
+              </li>  
+        </ul>
+        
+    </div>
+</div>
+<!-- END: Main Menu-->
+
+
+
+<!-- Include jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    function setActiveClass() {
+      $('.nav-item').removeClass('active');
+      $(this).closest('.nav-item').addClass('active');
+    }
+
+    // Add click event listener to navigation links
+    $('.nav-item a').on('click', setActiveClass);
+
+    // Retain active state on page reload based on href
+    var currentPath = window.location.pathname;
+    $('.nav-item a').each(function() {
+      var linkHref = $(this).attr('href');
+      if (linkHref === currentPath) {
+        $(this).closest('.nav-item').addClass('active');
+      }
+    });
+
+    // Fullscreen toggle functionality
+    $('#fullscreen-toggle').on('click', function(e) {
+      e.preventDefault();
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    });
+
+    // Replace feather icons
+    feather.replace();
+  });
+</script>
+

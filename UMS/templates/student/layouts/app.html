@@ -1,0 +1,333 @@
+{% load static %}
+<!doctype html>
+<html class="loading" lang="en" data-textdirection="ltr">
+  <!-- BEGIN: Head-->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
+    <meta name="description" content="Vuexy admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
+    <meta name="keywords" content="admin template, Vuexy admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="PIXINVENT">
+    <title>{% block title %}Face Recognization Attendence System{% endblock %}</title>
+    <link rel="apple-touch-icon" href="{% static 'app-assets/images/ico/apple-icon-120.png' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'app-assets/images/ico/favicon.ico' %}">    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
+
+    <!-- BEGIN: Vendor CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/vendors/css/vendors.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/vendors/css/charts/apexcharts.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/vendors/css/extensions/toastr.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/vendors/css/extensions/tether-theme-arrows.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/vendors/css/extensions/tether.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/vendors/css/extensions/shepherd-theme-default.css' %}">
+    <!-- END: Vendor CSS-->
+
+    <!-- BEGIN: Theme CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/bootstrap-extended.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/colors.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/components.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/themes/dark-layout.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/themes/bordered-layout.css' %}">    
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/themes/semi-dark-layout.css' %}">
+
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/core/menu/menu-types/vertical-menu.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/core/colors/palette-gradient.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/pages/dashboard-analytics.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/pages/card-analytics.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/plugins/tour/tour.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/plugins/charts/chart-apex.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/plugins/extensions/ext-component-toastr.css' %}">
+    <!-- END: Page CSS-->
+
+    <!-- BEGIN: Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <!-- END: Custom CSS-->
+
+    <!-- BEGIN: Toastr CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/vendors/css/extensions/toastr.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/css/plugins/extensions/toastr.css' %}">
+    <!-- END: Toastr CSS-->
+
+    <!-- BEGIN: DataTables CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/vendors/css/tables/datatable/datatables.min.css' %}">
+    <!-- END: Toastr CSS-->
+
+    <!-- BEGIN: SweetAlert CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'app-assets/vendors/css/extensions/sweetalert2.min.css' %}">
+    <!-- END: Toastr CSS-->
+
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; /* Use border-box for consistent box-sizing */
+        }        
+        .tippy-popper {
+            display: none;
+        }
+        .feather {
+            font-size: 14px;
+        }           
+    </style>
+    <!-- Cache control meta tags -->
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    {% block css %}{% endblock %}
+</head>
+<!-- END: Head-->
+<body class="vertical-layout vertical-menu-modern 2-columns  navbar-floating footer-static" data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
+    {% include 'student/layouts/partials/header.html' %}
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="header-navbar-shadow"></div>
+        <div class="content-wrapper">
+            <div class="content-header row"></div>
+            <div class="content-body">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
+    <form id="logout-form" action="" method="POST" style="display: none;">
+        {% csrf_token %}
+    </form>
+
+ <!-- BEGIN: Customizer-->
+ <div class="customizer d-none d-md-block"><a class="customizer-toggle d-flex align-items-center justify-content-center" href="#"><i class="spinner" data-feather="settings"></i></a><div class="customizer-content">
+    <!-- Customizer header -->
+    <div class="customizer-header px-2 pt-1 pb-0 position-relative">
+      <h4 class="mb-0">Theme Customizer</h4>
+      <p class="m-0">Customize & Preview in Real Time</p>
+  
+      <a class="customizer-close" href="#"><i data-feather="x"></i></a>
+    </div>
+  
+    <hr />
+  
+    <!-- Styling & Text Direction -->
+    <div class="customizer-styling-direction px-2">
+      <p class="fw-bold">Skin</p>
+      <div class="d-flex">
+        <div class="form-check me-1">
+          <input
+            type="radio"
+            id="skinlight"
+            name="skinradio"
+            class="form-check-input layout-name"
+            checked
+            data-layout=""
+          />
+          <label class="form-check-label" for="skinlight">Light</label>
+        </div>
+        <div class="form-check me-1">
+          <input
+            type="radio"
+            id="skinbordered"
+            name="skinradio"
+            class="form-check-input layout-name"
+            data-layout="bordered-layout"
+          />
+          <label class="form-check-label" for="skinbordered">Bordered</label>
+        </div>
+        <div class="form-check me-1">
+          <input
+            type="radio"
+            id="skindark"
+            name="skinradio"
+            class="form-check-input layout-name"
+            data-layout="dark-layout"
+          />
+          <label class="form-check-label" for="skindark">Dark</label>
+        </div>
+        <div class="form-check">
+          <input
+            type="radio"
+            id="skinsemidark"
+            name="skinradio"
+            class="form-check-input layout-name"
+            data-layout="semi-dark-layout"
+          />
+          <label class="form-check-label" for="skinsemidark">Semi Dark</label>
+        </div>
+      </div>
+    </div>
+  
+    <hr />
+  
+    <!-- Menu -->
+    <div class="customizer-menu px-2">
+      <div id="customizer-menu-collapsible" class="d-flex">
+        <p class="fw-bold me-auto m-0">Menu Collapsed</p>
+        <div class="form-check form-check-primary form-switch">
+          <input type="checkbox" class="form-check-input" id="collapse-sidebar-switch" />
+          <label class="form-check-label" for="collapse-sidebar-switch"></label>
+        </div>
+      </div>
+    </div>
+    <hr />
+  
+    <!-- Layout Width -->
+    <div class="customizer-footer px-2">
+      <p class="fw-bold">Layout Width</p>
+      <div class="d-flex">
+        <div class="form-check me-1">
+          <input type="radio" id="layout-width-full" name="layoutWidth" class="form-check-input" checked />
+          <label class="form-check-label" for="layout-width-full">Full Width</label>
+        </div>
+        <div class="form-check me-1">
+          <input type="radio" id="layout-width-boxed" name="layoutWidth" class="form-check-input" />
+          <label class="form-check-label" for="layout-width-boxed">Boxed</label>
+        </div>
+      </div>
+    </div>
+    <hr />
+  
+    <!-- Navbar -->
+    <div class="customizer-navbar px-2">
+      <div id="customizer-navbar-colors">
+        <p class="fw-bold">Navbar Color</p>
+        <ul class="list-inline unstyled-list">
+          <li class="color-box bg-white border selected" data-navbar-default=""></li>
+          <li class="color-box bg-primary" data-navbar-color="bg-primary"></li>
+          <li class="color-box bg-secondary" data-navbar-color="bg-secondary"></li>
+          <li class="color-box bg-success" data-navbar-color="bg-success"></li>
+          <li class="color-box bg-danger" data-navbar-color="bg-danger"></li>
+          <li class="color-box bg-info" data-navbar-color="bg-info"></li>
+          <li class="color-box bg-warning" data-navbar-color="bg-warning"></li>
+          <li class="color-box bg-dark" data-navbar-color="bg-dark"></li>
+        </ul>
+      </div>
+  
+      <p class="navbar-type-text fw-bold">Navbar Type</p>
+      <div class="d-flex">
+        <div class="form-check me-1">
+          <input type="radio" id="nav-type-floating" name="navType" class="form-check-input" checked />
+          <label class="form-check-label" for="nav-type-floating">Floating</label>
+        </div>
+        <div class="form-check me-1">
+          <input type="radio" id="nav-type-sticky" name="navType" class="form-check-input" />
+          <label class="form-check-label" for="nav-type-sticky">Sticky</label>
+        </div>
+        <div class="form-check me-1">
+          <input type="radio" id="nav-type-static" name="navType" class="form-check-input" />
+          <label class="form-check-label" for="nav-type-static">Static</label>
+        </div>
+        <div class="form-check">
+          <input type="radio" id="nav-type-hidden" name="navType" class="form-check-input" />
+          <label class="form-check-label" for="nav-type-hidden">Hidden</label>
+        </div>
+      </div>
+    </div>
+    <hr />
+  
+    <!-- Footer -->
+    <div class="customizer-footer px-2">
+      <p class="fw-bold">Footer Type</p>
+      <div class="d-flex">
+        <div class="form-check me-1">
+          <input type="radio" id="footer-type-sticky" name="footerType" class="form-check-input" />
+          <label class="form-check-label" for="footer-type-sticky">Sticky</label>
+        </div>
+        <div class="form-check me-1">
+          <input type="radio" id="footer-type-static" name="footerType" class="form-check-input" checked />
+          <label class="form-check-label" for="footer-type-static">Static</label>
+        </div>
+        <div class="form-check me-1">
+          <input type="radio" id="footer-type-hidden" name="footerType" class="form-check-input" />
+          <label class="form-check-label" for="footer-type-hidden">Hidden</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+      </div>
+      <!-- End: Customizer-->
+    <!-- BEGIN: Footer-->
+    <footer class="footer footer-static footer-light">
+        <p class="clearfix blue-grey lighten-2 mb-0"><span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; {{ 2025 }}<a class="text-bold-800 grey darken-2" href="#" target="_blank">{{ app_name|default:'SACAS' }},</a>{% if siteSettings %}{{ siteSettings.footer_sentence|safe }}{% endif %}</span></span>
+            <button class="btn btn-primary btn-icon scroll-top" type="button"><i class="feather icon-arrow-up"></i></button>
+        </p>
+    </footer>
+    <!-- END: Footer-->
+
+    <!-- BEGIN: Vendor JS-->
+    <script src="{% static 'app-assets/vendors/js/vendors.min.js' %}"></script>
+    <!-- BEGIN Vendor JS-->
+
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="{% static 'app-assets/vendors/js/charts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/extensions/tether.min.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/extensions/shepherd.min.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/extensions/toastr.min.js' %}"></script>
+    <!-- END: Page Vendor JS-->
+
+    <!-- BEGIN: Theme JS-->
+    <script src="{% static 'app-assets/js/core/app-menu.js' %}"></script>
+    <script src="{% static 'app-assets/js/core/app.min.js' %}"></script>
+    <script src="{% static 'app-assets/js/scripts/components.js' %}"></script>
+    <script src="{% static 'app-assets/js/scripts/customizer.js'  %}"></script>
+    <!-- END: Theme JS-->
+
+    <!-- BEGIN: Page JS-->
+    <script src="{% static 'app-assets/js/scripts/pages/dashboard-analytics.js' %}"></script>
+    <!-- Toastr -->
+    <script src="{% static 'app-assets/vendors/js/extensions/toastr.min.js' %}"></script>
+    <script src="{% static 'app-assets/js/scripts/extensions/toastr.js' %}"></script>
+    <!-- DataTables -->
+    <script src="{% static 'app-assets/vendors/js/tables/datatable/pdfmake.min.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/tables/datatable/vfs_fonts.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/tables/datatable/datatables.min.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/tables/datatable/datatables.buttons.min.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/tables/datatable/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/tables/datatable/buttons.print.min.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'app-assets/js/scripts/datatables/datatable.js' %}"></script>
+    <script src="{% static 'app-assets/vendors/js/extensions/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'app-assets/js/scripts/extensions/sweet-alerts.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.2/feather.min.js" integrity="sha512-zMm7+ZQ8AZr1r3W8Z8lDATkH05QG5Gm2xc6MlsCdBz9l6oE8Y7IXByMgSm/rdRQrhuHt99HAYfMljBOEZ68q5A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        $(window).on('load',  function(){
+            if (feather) {
+              feather.replace({ width: 14, height: 14 });
+            }
+          })
+          
+        $(document).ready(function() {
+            toastr.options.timeOut = 1500; // 1.5s
+            {% if messages %}
+            {% for message in messages %}
+            toastr.{{ message.tags }}('{{ message }}');
+            {% endfor %}
+            {% endif %}
+        });
+
+        const lang = {
+            please_select_a_row: "{{ _('Please select a row') }}",
+            are_you_sure: "{{ _('Are you sure?') }}",
+            once_deleted: "{{ _('Once deleted, you will not be able to recover this imaginary file!') }}",
+            yes_delete_it: "{{ _('Yes, delete it!') }}",
+            cancelled: "{{ _('Cancelled') }}",
+            data_will_not_be_deleted: "{{ _('Your imaginary file is safe!') }}",
+        };
+    </script>
+    {% block js %}{% endblock %}
+</body>
+</html>

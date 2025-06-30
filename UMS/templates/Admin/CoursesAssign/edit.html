@@ -1,0 +1,126 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Edit | Assign Courses{% endblock %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Edit Course Assignment <i class="feather icon-book"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+
+                        <form method="POST" action="{% url 'Assigncourse_edit' CoursesAssign.id %}" enctype="multipart/form-data" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="sem_course">Course Name *</label>
+                                            <select name="sem_course" class="form-control" id="course">
+                                                <option value="">- Select -</option>
+                                                {% for Scourse in SemCourse %}
+                                                    <option value="{{ Scourse.id }}" {% if Scourse.id == CoursesAssign.sem_course.id %} selected {% endif %}>
+                                                        {{ Scourse.course.name|upper }} - {{ Scourse.sem_course_id }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="faculty">Faculty Name *</label>
+                                            <select name="faculty" class="form-control" id="program">
+                                                <option value="">- Select -</option>
+                                                {% for faculty in faculties %}
+                                                    <option value="{{ faculty.id }}" {% if faculty.id == CoursesAssign.faculty.id %} selected {% endif %}>
+                                                        {{ faculty.faculty.name|upper }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="section">Section Code (unique) *</label>
+                                            <input type="text" name="section" value="{{ CoursesAssign.section }}" class="form-control" id="name">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Schedule Fields -->
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="day">Day *</label>
+                                            <select name="day" class="form-control" id="day">
+                                                <option value="">- Select -</option>
+                                                <option value="monday" {% if initial_day == "monday" %}selected{% endif %}>Monday</option>
+                                                <option value="tuesday" {% if initial_day == "tuesday" %}selected{% endif %}>Tuesday</option>
+                                                <option value="wednesday" {% if initial_day == "wednesday" %}selected{% endif %}>Wednesday</option>
+                                                <option value="thursday" {% if initial_day == "thursday" %}selected{% endif %}>Thursday</option>
+                                                <option value="friday" {% if initial_day == "friday" %}selected{% endif %}>Friday</option>
+                                                <option value="saturday" {% if initial_day == "saturday" %}selected{% endif %}>Saturday</option>
+                                                <option value="sunday" {% if initial_day == "sunday" %}selected{% endif %}>Sunday</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="start_time">Start Time *</label>
+                                            <input type="time" name="start_time" value="{{ start_time }}" class="form-control">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="end_time">End Time *</label>
+                                            <input type="time" name="end_time" value="{{ end_time }}" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+$(document).ready(function () {
+    // Display Toastr messages
+    {% if messages %}
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message|escapejs }}");
+        {% endfor %}
+    {% endif %}
+});
+{% endblock %}

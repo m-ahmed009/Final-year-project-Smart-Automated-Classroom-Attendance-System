@@ -1,0 +1,110 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Edit Student <i class="feather icon-edit"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'Students_edit' student.id %}" enctype="multipart/form-data" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="user">User Name *</label>
+                                            <select name="user" class="form-control" id="user">
+                                                <option value="">- Select -</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}" {% if user.id == student.user.id %}selected{% endif %}>
+                                                        {{ user.username|upper }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="student_id">Student ID *</label>
+                                            <input type="text" name="student_id" class="form-control" id="student_id" value="{{ student.student_id }}">
+                                        </div>
+                                    </div>
+                        
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="name">Student Name *</label>
+                                            <input type="text" name="name" class="form-control" id="name" value="{{ student.name }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="email">Email *</label>
+                                            <input type="email" name="email" class="form-control" id="email" value="{{ student.email }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="phone">Phone *</label>
+                                            <input type="text" name="phone" class="form-control" id="phone" value="{{ student.phone }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="address">Address *</label>
+                                            <input name="address" class="form-control" id="address" value ="{{ student.address }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="images">Upload 2 Images ( Dimensions 640 x 480)  *</label>
+                                            <input type="file" name="images" class="form-control" id="images" multiple>
+                                        </div>
+                                    </div>
+                                    <!-- Display existing images -->
+                                    <div class="row mx-4">
+                                        {% for img in student.images.all %}
+                                            <div class="image-grid">
+                                              
+                                                <img src="{{ img.image.url }}" class="mb-2"
+                                                width="80" height="80"style="margin-right: 60px;">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Update Student</button>
+                            </div>
+                        </form>                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

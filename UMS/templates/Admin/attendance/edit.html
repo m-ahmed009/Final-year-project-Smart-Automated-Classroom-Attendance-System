@@ -1,0 +1,89 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="edit-attendance">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Edit Attendance <i class="feather icon-edit"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'attendance_edit' attendance.attendance_id %}">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <!-- Course Name Field -->
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="sem_course_id">Course Name *</label>
+                                            <select name="sem_course_id" class="form-control" id="sem_course_id" required>
+                                                <option value="">- Select -</option>
+                                                {% for sem_course in sem_courses %}
+                                                    <option value="{{ sem_course.id }}" {% if sem_course.id == attendance.sem_course_id.id %}selected{% endif %}>
+                                                        {{ sem_course.course.name|upper }} - {{ sem_course.sem_course_id }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                                                                  
+                                        </div>
+                                    </div>
+                                    <!-- Attendance Date Field -->
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="attendance_date">Attendance Date *</label>
+                                            <input type="date" name="attendance_date" value="{{ attendance.attendance_date|date:'Y-m-d' }}" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <!-- Remarks Field -->
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="remarks">Remarks *</label>
+                                            <textarea name="remarks" class="form-control" rows="4" required>{{ attendance.remarks }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function () {
+        // Display Toastr messages (if any)
+        {% if messages %}
+            {% for message in messages %}
+                toastr.{{ message.tags }}("{{ message|escapejs }}");
+            {% endfor %}
+        {% endif %}
+    });
+</script>
+{% endblock %}

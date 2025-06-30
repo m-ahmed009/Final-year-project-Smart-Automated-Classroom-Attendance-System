@@ -1,0 +1,234 @@
+{% extends 'admin/layouts/app.html' %}
+{% block title %}Enrollments | List{% endblock %}
+
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+
+    #accuracy-section {
+        display: none; /* Initially hide accuracy section */
+    }
+    #loading-spinner {
+        display: none; /* Initially hide loading spinner */
+    }
+    .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start !important;
+    padding: 1rem;
+    border-top: 1px solid #ededed;
+    border-bottom-right-radius: 0.6rem;
+    border-bottom-left-radius: 0.6rem;
+    }    
+</style>
+{% endblock %}
+
+{% block content %}
+<h5><i class="feather icon-folder-plus"></i> Course Enrollments</h5>
+
+<div class="row">
+    
+    {% if course_enrollments|length == 0 %}
+        <div class="col-12 no-enrollment">
+            <hr>
+            <i class="feather icon-alert-circle text-danger"></i> No Courses Enrolled Here!
+        </div>
+    {% else %}  
+        {% for course_name, details in course_enrollments.items %}
+        <div class="col-md-4 mb-3">
+            <hr>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="feather icon-hard-drive"></i> {{ course_name|upper }} 
+                        <a href="{% url 'enrollment_create' %}" class="position-absolute" style="top: 15px; right: 10px;">
+                            <span class="badge badge-pill badge-primary">
+                                <i class="feather icon-plus"></i>
+                            </span>
+                        </a>                    
+                    </h5>
+
+                    <hr>
+                    <p>
+                        <i class="feather icon-users"></i> <b>Total Students:</b> 
+                        <span class="badge badge-pill badge-primary">{{ details.enrollments|length }}</span>
+                    </p>
+                    <p>
+                        <i class="feather icon-user-check"></i> <b>Faculty Name:</b> {{ details.faculty_name }} - {{ details.faculty_id }}
+                    </p>
+                    <hr>
+                    <p class="card-text">
+                        <i class="feather icon-calendar"></i> <b>Semester:</b> {{ details.enrollments.0.sem_course.semester.semester_name|upper }}
+                    </p>
+                    <p>
+                        <i class="feather icon-bookmark"></i> <b>Schedule:</b> ({{ details.schedule|upper }})
+                    </p>
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                       <button 
+                        class="btn btn-success btn waves-effect waves-light" 
+                        onclick="initiateModelTraining('{{ course_name }}', '{{ details.schedule }}')">
+                        <i class="feather icon-refresh-cw"></i> Model
+                       </button>
+                    
+                        
+                        {% if details.enrollments %}
+                        <form action="{% url 'enrollment_delete' pk=details.enrollments.0.id %}" method="POST" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn waves-effect waves-light" onclick="return confirm('Are you sure you want to delete all enrollments for this course?');">
+                                <i class="feather icon-trash"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                        <a href="{% url 'enrollment_indexs' details.enrollments.0.sem_course.id %}" class="btn btn-primary btn waves-effect waves-light">
+                            <i class="feather icon-eye"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<!-- Modals for Accuracy -->
+<div class="modal fade" id="accuracyModal" tabindex="-1" role="dialog" aria-labelledby="accuracyModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accuracyModalLabel">Model Training</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Loading Spinner (Visible during training) -->
+                <div id="loading-spinner">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p>Loading... Please wait while the model is training.</p>
+                </div>
+                <!-- Section for Accuracy details (Initially hidden) -->
+                <div id="accuracy-section">
+                    <p><strong>Validation Accuracy:</strong> <span id="validationAccuracy"></span></p>
+                    <p><strong>Training Accuracy:</strong> <span id="trainingAccuracy"></span></p>
+                    <p><strong>Test Accuracy:</strong> <span id="testAccuracy"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: none;">
+                <!-- Success Message -->
+                <p id="successMessage" style="display: none; color: green;"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toastSuccess" style="position: fixed; top: 20px; right: 20px; display: none;">
+    <div class="toast-header">
+        <strong class="mr-auto toast-title">Success</strong>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="toast-body">
+        The model has been trained successfully!
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+    function initiateModelTraining(course_name, schedule) {
+        // Modal and spinner show
+        $('#loading-spinner').show();
+        $('#accuracyModal').modal('show');
+    
+        // Hide accuracy and footer initially
+        $('#accuracy-section').hide();
+        $('.modal-footer').hide();
+    
+        // CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+        // Send POST request to backend
+        fetch("{% url 'initiate_training' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+            },
+            body: JSON.stringify({
+                course_name: course_name, // Send course name
+                schedule: schedule       // Send schedule
+            }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Hide loading spinner
+            $('#loading-spinner').hide();
+    
+            if (data.status === 'success') {
+
+                $('#validationAccuracy').text(data.validation_accuracy.toFixed(2) + '%');
+                $('#trainingAccuracy').text(data.training_accuracy.toFixed(2) + '%');
+                $('#testAccuracy').text(data.test_accuracy.toFixed(2) + '%');
+
+                
+                $('#successMessage').html(`
+                    <i class="feather icon-check-circle" style="color: green;"></i> 
+                    Model trained and saved successfully!
+                `).show();
+                $('.modal-footer').show();
+                $('#accuracy-section').show();
+            } else {
+                $('#successMessage').html(`
+                    <i class="feather icon-x-circle" style="color: red;"></i> 
+                    Error: ${data.message}
+                `).show();
+            }
+        })
+        .catch(error => {
+            // Handle errors
+            $('#loading-spinner').hide();
+            $('#successMessage').html(`
+                <i class="feather icon-x-circle" style="color: red;"></i> 
+                Error: ${error.message}
+            `).show();
+        });
+    }
+    
+</script> 
+
+{% endblock %}

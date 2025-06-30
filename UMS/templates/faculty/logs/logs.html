@@ -1,0 +1,144 @@
+{% extends 'faculty/layouts/app.html' %}
+
+{% block title %}Attendance Log{% endblock %}
+
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+<style>
+    .summary-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .badge {
+        font-size: 0.9rem;
+    }
+    .filter-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .date-filter {
+        display: flex;
+        align-items: center;
+    }
+    .date-filter input {
+        margin-left: 10px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="summary-card">
+                <h5>Course Name</h5>
+                <h3>{{ course_name }}</h3>
+            </div>
+        </div>
+              
+        <div class="col-md-4">
+            <div class="summary-card">
+                <h5>Total Students</h5>
+                <h3>{{ total_students }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="summary-card">
+                <h5>Present Students</h5>
+                <h3 class="text-success">{{ present_students }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4 mt-2">
+            <div class="summary-card">
+                <h5>Absent Students</h5>
+                <h3 class="text-danger">{{ absent_students }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-4">
+        <div class="filter-container">
+            <h4>Attendance Log</h4>
+            <div class="date-filter">
+                <label for="filterDate">Filter by Date:</label>
+                <input type="date" id="filterDate">
+            </div>
+        </div>
+
+        <table id="attendanceTable" class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Student ID</th>                    
+                    <th>Student Name</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                    <th>Date</th>
+                    <!-- <th>Actions</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance_data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ record.enrollment_id.student.student_id }}</td> <!-- Student ID -->                    
+                    <td>{{ record.enrollment_id.student.name }}</td> <!-- Student's Name -->
+                    <!-- <td>{{ record.enrollment_id.sem_course.course.name }}</td> -->
+                    <td>
+                        {% if record.attendance_status == "1" %}
+                            <span class="badge bg-success">Present</span>
+                        {% else %}
+                            <span class="badge bg-danger">Absent</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ record.remarks }}</td> <!-- Remarks -->
+                    <td>{{ record.attendance_id.attendance_date|date:"Y-m-d" }}</td> <!-- Attendance Date -->
+                    <!-- <td>
+                        <div class="table-actions">
+                            <a href="{% url 'edit_attendance' record.stud_attendance_id %}" class="text-warning" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="{% url 'view_attendance' record.stud_attendance_id %}" class="text-info" title="View">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                            <a href="{% url 'delete_attendance' record.stud_attendance_id %}" class="text-danger" title="Delete">
+                                <i class="bi bi-trash-fill"></i>
+                            </a>
+                        </div>
+                    </td> -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const table = $('#attendanceTable').DataTable({
+            "pageLength": 10,
+            "lengthMenu": [10, 25, 50, 100],
+        });
+
+        // Filter by Date
+        $('#filterDate').on('change', function () {
+            const selectedDate = $(this).val();
+            table.column(5).search(selectedDate).draw();
+        });
+    });
+</script>
+{% endblock %}

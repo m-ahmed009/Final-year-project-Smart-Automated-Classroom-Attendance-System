@@ -1,0 +1,76 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Faculty | Edit{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Edit Faculty <i class="feather icon-edit"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'faculty_edit' faculty.id %}" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="user">User Name *</label>
+                                            <select name="user" class="form-control" id="user">
+                                                <option value="">- Select -</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}" {% if user.id == faculty.user.id %}selected{% endif %}>
+                                                        {{ user.first_name|upper }} {{ user.last_name|upper }}-{{ user.username|upper }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="faculty_id">Faculty Code *</label>
+                                            <input type="text" name="faculty_id" value="{{ faculty.faculty_id }}" class="form-control" id="faculty_id">
+                                        </div>
+                                    </div>
+                        
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="name">Faculty Name *</label>
+                                            <input type="text" name="name" value="{{ faculty.name }}" class="form-control" id="name">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="title">Title *</label>
+                                            <input type="text" name="title" value="{{ faculty.title }}" class="form-control" id="title">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="email">Email *</label>
+                                            <input type="email" name="email" value="{{ faculty.email }}" class="form-control" id="email">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="office">Office *</label>
+                                            <input type="text" name="office" value="{{ faculty.office }}" class="form-control" id="office">
+                                        </div>
+                                    </div>                                                                      
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

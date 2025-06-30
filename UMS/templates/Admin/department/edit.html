@@ -1,0 +1,81 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Edit Department <i class="feather icon-edit"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'department_edit' department.id %}" class="number-tab-steps wizard-circle" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="Campus">Campus Name *</label>
+                                            <select name="campus" class="form-control">
+                                                <option value="">-  select -</option>
+                                                {% for campus in campuses %}
+                                                    <option value="{{ campus.campus_id }}" 
+                                                            {% if campus.campus_id == department.campus_id %}selected{% endif %}>
+                                                        {{ campus.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="title">Department Code *</label>
+                                            <input type="text" name="department_id" value="{{department.department_id}}" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="title">Department Name *</label>
+                                            <input type="text" name="name" value="{{department.name}}" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="description">Department Description *</label>                                            
+                                            <textarea name="description" class="form-control" id="desc" rows="8">{{ department.description }}</textarea>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

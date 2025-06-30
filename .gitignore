@@ -1,0 +1,13 @@
+media/
+model/
+__pycache__/
+*.pyc
+*.pyo
+*.pkl
+*.db
+*.sqlite3
+.env
+env/
+*.log
+*.bak
+staticfiles/

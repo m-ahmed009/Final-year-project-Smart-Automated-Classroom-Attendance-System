@@ -1,0 +1,60 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Faculty | Show{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Faculty Details <i class="feather icon-archive"></i></h4>
+                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                <div class="heading-elements">
+                    <ul class="list-inline mb-0">
+                        <li><a data-action="collapse"><i class="feather icon-chevron-down"></i></a></li>
+                        <li><a data-action="expand"><i class="feather icon-maximize"></i></a></li>
+                        <li><a data-action="reload"><i class="feather icon-rotate-cw"></i></a></li>
+                        <li><a data-action="close"><i class="feather icon-x"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <div class="row" style="width: 100%;">
+                                    <div class="col-6">
+                                        <p><h5>User Name: </h5>{{ faculty.user.first_name|upper }} {{ faculty.user.last_name|upper }} - {{ faculty.user.username|upper }}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p><h5>Faculty Code: </h5>{{ faculty.faculty_id|upper }}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p><h5>Faculty Name: </h5>{{ faculty.name|upper }}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p><h5>Title: </h5>{{ faculty.title|upper }}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p><h5>Email: </h5>{{ faculty.email|upper }}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p><h5>Office: </h5>{{ faculty.office|upper }}</p>
+                                    </div>                                                                                                                           
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="{% url 'faculty_index' %}"  class="btn btn-primary mr-1 mb-1 waves-effect waves-light"><i class="feather icon-arrow-left"></i> Back to List</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,242 @@
+{% extends 'faculty/layouts/app.html' %}
+
+{% block title %}FRS | Dashboard{% endblock %}
+
+{% load static %}
+
+{% block css %}
+<style>
+    /* Camera Canvas Styling */
+    #camera-canvas {
+        width: 100%;
+        height: 35rem;
+        border: 1px solid #9f9f9f;
+        border-radius: 25px;
+        background-color: #f8f9fa;
+        box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+        -webkit-box-shadow: 4px 11px 23px 1px rgb(143 143 143 / 75%);
+    }
+
+    /* Scrollable Student List Styling */
+    .student-list {
+        height: 490px;
+        overflow-y: auto;
+        border: 1px solid #f3f3f3;
+        padding: 10px;
+        border-radius: 25px;
+        box-shadow: 2px 4px 5px 0px rgba(0, 0, 0, 0.75);
+    }
+
+    .student-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .student-item img {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+        border-radius: 50%;
+    }
+
+    .status-badge {
+        margin-left: auto;
+        border-radius:25px;
+    }
+
+    
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h5><i class="feather icon-calendar"></i> Take Attendance</h5>
+            <hr>
+        </div>
+    </div>
+</div>
+<div class="container mt-2">
+    <form id="attendance-form" action="{% url 'save_camera_attendance' sem_course_id=sem_course_id attendance_id=attendance_id %}" method="POST">
+        {% csrf_token %}
+    <div class="row">
+        <!-- Camera Section -->
+        <div class="col-md-9">
+            <canvas id="camera-canvas"></canvas>
+        </div>
+        <!-- Student List Section -->
+        <div class="col-md-3">
+            <div class="student-list">
+                <h6>Total Students: <span class="badge bg-primary">{{ students|length }}</span></h6>
+                <hr>
+                {% for student in students %}
+                <div class="student-item" id="student-{{ student.student_id }}">
+                    <img src="{% static 'images/graduate.png' %}" alt="Student Image">
+                    <h6 style="font-size:12px">{{ student.name }} - {{ student.student_id }}</h6>
+                    <span class="badge bg-secondary status-badge">c</span>
+                </div>
+                <hr>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <input type="hidden" name="sem_course_id" value="{{ sem_course_id }}">
+            <input type="hidden" name="attendance_id" value="{{ attendance_id }}">
+            <input type="text" name="remarks" class="form-control" placeholder="Enter remarks">
+
+            <button id="save-btn" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+        <div class="col-md-6">
+                <button id="capture-btn" class="btn btn-primary">Capture</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+const canvas = document.getElementById('camera-canvas');
+const context = canvas.getContext('2d');
+const video = document.createElement('video');
+const attendanceList = document.querySelector('.student-list');
+const captureButton = document.getElementById('capture-btn');
+
+// Access user's webcam
+navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+        video.srcObject = stream;
+        video.play();
+    })
+    .catch(err => {
+        console.error("Error accessing webcam:", err.message);
+        alert(`Error accessing webcam: ${err.message}`);
+    });
+
+// Draw video to canvas
+function drawFrame() {
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    }
+    requestAnimationFrame(drawFrame);
+}
+
+video.addEventListener('play', () => {
+    drawFrame();
+});
+
+//correct code
+
+captureButton.addEventListener('click', () => {
+    const frame = canvas.toDataURL('image/jpeg');
+
+    fetch("{% url 'camera_attendance' sem_course_id=sem_course_id attendance_id=attendance_id %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },  
+        body: JSON.stringify({ frame })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const { attendance_status } = data;
+
+            if (attendance_status && attendance_status.length > 0) {
+                const studentItems = attendanceList.querySelectorAll('.student-item');
+
+                studentItems.forEach(item => {
+                    const studentDetails = item.querySelector('h6').textContent.split(' - ');
+                    const studentName = studentDetails[0].trim();
+                    const studentId = studentDetails[1].trim();
+                    const badge = item.querySelector('.status-badge');
+
+                    const recognizedStudent = attendance_status.find(
+                        student => student.student_name === studentName && student.student_id === studentId
+                    );
+
+                    if (recognizedStudent && recognizedStudent.status === 1) {
+                        badge.className = 'badge bg-success status-badge';
+                        badge.textContent = 'P';
+                    } else {
+                        badge.className = 'badge bg-danger status-badge';
+                        badge.textContent = 'A';
+                    }
+                });
+            } else {
+                alert('No students recognized in the frame.');
+            }
+        } else {
+            alert(data.message || 'An error occurred while processing attendance.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to mark attendance. Please check the console for more details.');
+    });
+});
+
+
+ // Set the CSRF token in the headers for all AJAX requests
+    $.ajaxSetup({
+        headers: {
+            'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() // Add CSRF token here
+        }
+    });
+
+$('#attendance-form').on('submit', function(e) {
+    e.preventDefault(); // Prevent default form submission
+
+    // Create a map of student IDs and their attendance statuses (P for Present, A for Absent)
+    const attendanceStatus = {};
+    const studentItems = attendanceList.querySelectorAll('.student-item');
+
+    studentItems.forEach(item => {
+        const studentId = item.querySelector('h6').textContent.split(' - ')[1].trim();
+        const badge = item.querySelector('.status-badge');
+
+        // Get the attendance status from the badge (P for Present, A for Absent)
+        const status = badge.textContent === 'P' ? 'P' : 'A';
+        attendanceStatus[`attendance_${studentId}`] = status;
+    });
+
+    // Add remarks to the form data
+    const remarks = $('input[name="remarks"]').val();
+    if (remarks) {
+        attendanceStatus['remarks'] = remarks; // Add remarks to the data
+    }
+
+    // Send the data to the server
+    $.ajax({
+        url: $(this).attr('action'),  // Use the form action URL
+        type: 'POST',
+        data: $.extend($(this).serialize(), attendanceStatus),  // Merge form data with attendance data
+        success: function(response) {
+            if (response.status === 'success') {
+                alert('Attendance saved successfully!');
+                location.reload();  // Reload the page to refresh the attendance list
+            } else {
+                alert(response.message || 'Failed to save attendance.');
+            }
+        },
+        error: function(xhr) {
+            console.error(xhr.responseText);
+            alert('An error occurred.');
+        }
+    });
+});
+
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Program | Add{% endblock %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000; /* Set text color to black */
+        background-color: #fff; /* Set background color to white */
+    }
+    .toast-title {
+        color: #000; /* Title text color */
+    }
+    .toast-message {
+        color: #000; /* Message text color */
+    }
+    .toast-close-button {
+        color: #000; /* Close button color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Add Programs <i class="feather icon-archive"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'program_create' %}" enctype="multipart/form-data" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="department">Department Name *</label>
+                                            <select name="department" class="form-control" id="department">
+                                                <option value="">- Select -</option>
+                                                {% for department in departments %}
+                                                    <option value="{{ department.id }}">{{ department.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="program_id">Program Code *</label>
+                                            <input type="text" name="program_id" value="" class="form-control" id="program_id">
+                                        </div>
+                                    </div>
+                        
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="name">Program Name *</label>
+                                            <input type="text" name="name" value="" class="form-control" id="name">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="duration_year">Duration Year *</label>
+                                            <input type="number" name="duration_year" value="" class="form-control" id="duration_year">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="total_credits">Total Credits *</label>
+                                            <input type="number" name="total_credits" value="" class="form-control" id="total_credits">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="degree_type">Degree Type *</label>
+                                            <input type="text" name="degree_type" value="" class="form-control" id="degree_type">
+                                        </div>
+                                    </div>                                                                                                            
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="program_description">Program Description *</label>
+                                            <textarea name="program_description" class="form-control" id="program_description" rows="8"></textarea>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Add</button>
+                            </div>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+$(document).ready(function () {
+    // Display Toastr messages
+    {% if messages %}
+        {% for message in messages %}
+            toastr.{{ message.tags }}("{{ message|escapejs }}");
+        {% endfor %}
+    {% endif %}
+
+});
+{% endblock %}

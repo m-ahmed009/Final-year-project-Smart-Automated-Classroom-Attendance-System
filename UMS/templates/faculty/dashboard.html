@@ -1,0 +1,187 @@
+{% extends 'faculty/layouts/app.html' %}
+
+{% block title %}FRAS | Faculty Dashboard{% endblock %}
+
+{% load static %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000;
+        background-color: #fff;
+    }
+    .toast-title {
+        color: #000;
+    }
+    .toast-message {
+        color: #000;
+    }
+    .toast-close-button {
+        color: #000;
+    }
+    .card-stat {
+        border-left: 4px solid #00cfe8;
+    }
+    .progress-thin {
+        height: 5px;
+    }
+    .avatar-content i {
+        font-size: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+
+    <!-- Welcome Message -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-4">
+                            <div class="avatar bg-rgba-primary p-50" style="width: 60px; height: 60px;">
+                                <div class="avatar-content">
+                                    <i data-feather="user" class="text-primary font-medium-5" style="width: 30px; height: 30px;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h4 class="mb-1">Welcome, {{ full_name }}!</h4>
+                            {% if faculty.faculty_id %}
+                                <p class="text-muted mb-1">Faculty Code: {{ faculty.faculty_id }}</p>
+                            {% endif %}
+                            {% if depart_assign.position %}
+                                <p class="text-muted mb-0">Position: {{ depart_assign.position }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row">
+        <!-- Card 1: Department -->
+        <div class="col-lg-4 col-md-6 col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-column align-items-start pb-0">
+                    <div class="avatar bg-rgba-primary p-50 m-0">
+                        <div class="avatar-content">
+                            <i data-feather="database" class="text-primary font-medium-5"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-bold-700 mt-1 mb-25">{{ department }}</h2>
+                    <p class="mb-0">Department</p>
+                </div>
+                <div class="card-content">
+                    <div id="chart1"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Total Courses -->
+        <div class="col-lg-4 col-md-6 col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-column align-items-start pb-0">
+                    <div class="avatar bg-rgba-success p-50 m-0">
+                        <div class="avatar-content">
+                            <i data-feather="book" class="text-success font-medium-5"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-bold-700 mt-1 mb-25">{{ total_courses }}</h2>
+                    <p class="mb-0">Total Courses</p>
+                </div>
+                <div class="card-content">
+                    <div id="chart2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Current Semester -->
+        <div class="col-lg-4 col-md-6 col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-column align-items-start pb-0">
+                    <div class="avatar bg-rgba-info p-50 m-0">
+                        <div class="avatar-content">
+                            <i data-feather="calendar" class="text-info font-medium-5"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-bold-700 mt-1 mb-25">{{ current_semester }}</h2>
+                    <p class="mb-0">Current Semester</p>
+                </div>
+                <div class="card-content">
+                    <div id="chart3"></div>
+                </div>
+            </div>
+        </div>
+        {% for course in assigned_courses %}
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card">
+                    <div class="card-header d-flex flex-column align-items-start pb-0">
+                        <div class="avatar bg-rgba-primary p-50 m-0">
+                            <div class="avatar-content">
+                                <i data-feather="book-open" class="text-primary font-medium-5"></i>
+                            </div>
+                        </div>
+                        <h2 class="text-bold-700 mt-1 mb-25">{{ course.course.name }}</h2>
+                        <p class="mb-0">Assigned Course</p>
+
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-warning">
+                        No courses assigned yet.
+                    </div>
+                </div>
+            {% endfor %}
+
+        
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/@apexcharts/apexcharts@3.35.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Feather Icons
+        feather.replace();
+        
+        // Initialize Charts
+        var options = {
+            chart: {
+                type: 'line',
+                height: 100,
+                zoom: { enabled: false },
+                toolbar: { show: false },
+                sparkline: { enabled: true }
+            },
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth', width: 2 },
+            series: [{ name: 'Data', data: [10, 20, 15, 30, 25, 35, 39] }],
+            xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'] },
+            yaxis: { show: false },
+            colors: ['#00cfe8'],
+            grid: { show: false },
+            tooltip: { enabled: false }
+        };
+
+        new ApexCharts(document.querySelector("#chart1"), options).render();
+        new ApexCharts(document.querySelector("#chart2"), options).render();
+        new ApexCharts(document.querySelector("#chart3"), options).render();
+    });
+</script>
+{% endblock %}

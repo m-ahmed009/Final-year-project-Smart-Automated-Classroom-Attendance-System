@@ -1,0 +1,142 @@
+{% extends 'faculty/layouts/app.html' %}
+{% load static %}
+
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header row">
+        <div class="content-header-left col-md-9 col-12 mb-2">
+            <div class="row breadcrumbs-top">
+                <div class="col-12">
+                    <h2 class="content-header-title float-start mb-0">Mark Attendance</h2>
+                    <div class="breadcrumb-wrapper">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'faculty_dashboard' %}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'attendance_roaster' sem_course_id=sem_course.id %}">Attendance Roster</a></li>
+                            <li class="breadcrumb-item active">Mark Attendance</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">{{ course.name }} - Mark Attendance</h4>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-light-primary me-1">Date: {{ attendance.attendance_date|date:"d-M-Y" }}</span>
+                            <span class="badge bg-light-info me-1">Time: {{ attendance.from_time }} - {{ attendance.to_time }}</span>
+                            <span class="badge bg-light-success">Section: {{ section }}</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form id="attendanceForm" method="POST" action="{% url 'save_attendance' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="attendance_id" value="{{ attendance.id }}">
+                            <input type="hidden" name="sem_course_id" value="{{ sem_course.id }}">
+                            
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="remarks">Remarks</label>
+                                        <textarea class="form-control" id="remarks" name="remarks" rows="2" required>{{ attendance.remarks }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Sr no.</th>
+                                            <th>Student ID</th>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for enrollment in enrollments %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ enrollment.student.student_id }}</td>
+                                            <td>{{ enrollment.student.name }}</td>
+                                            <td>
+                                                <select class="form-select" name="status_{{ enrollment.id }}" required>
+                                                    <option value="">Select Status</option>
+                                                    <option value="present" {% if enrollment.attendance_status == 'present' %}selected{% endif %}>Present</option>
+                                                    <option value="absent" {% if enrollment.attendance_status == 'absent' %}selected{% endif %}>Absent</option>
+                                                    <option value="late" {% if enrollment.attendance_status == 'late' %}selected{% endif %}>Late</option>
+                                                    <option value="excused" {% if enrollment.attendance_status == 'excused' %}selected{% endif %}>Excused</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="student_remarks_{{ enrollment.id }}" 
+                                                       value="{{ enrollment.attendance_remarks }}" placeholder="Optional">
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">
+                                                <div class="alert alert-info mb-0">
+                                                    <i class="feather icon-info"></i> No students enrolled in this course.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="row mt-2">
+                                <div class="col-12 text-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="feather icon-save"></i> Save Attendance
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+    $('#attendanceForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.status === 'success') {
+                    toastr.success(response.message);
+                    // Use the redirect_url from the server response
+                    if (response.redirect_url) {
+                        window.location.href = response.redirect_url;
+                    } else {
+                        window.location.href = "{% url 'attendance_roaster' sem_course_id=sem_course.id %}";
+                    }
+                } else {
+                    toastr.error(response.message || 'Error saving attendance');
+                }
+            },
+            error: function() {
+                toastr.error('An error occurred while saving attendance.');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Faculty | Add{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Add Faculty <i class="feather icon-user-plus"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'faculty_create' %}" class="number-tab-steps wizard-circle">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="user">User Name *</label>
+                                            <select name="user" class="form-control" id="user">
+                                                <option value="">- Select -</option>
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">{{ user.username|upper }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="faculty_id">Faculty Code *</label>
+                                            <input type="text" name="faculty_id" class="form-control" id="faculty_id">
+                                        </div>
+                                    </div>
+                        
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="name">Faculty Name *</label>
+                                            <input type="text" name="name" class="form-control" id="name">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="title">Title *</label>
+                                            <input type="text" name="title" class="form-control" id="title">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="email">Email *</label>
+                                            <input type="email" name="email" class="form-control" id="email">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="office">Office *</label>
+                                            <input type="text" name="office" class="form-control" id="office">
+                                        </div>
+                                    </div>                                                                      
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

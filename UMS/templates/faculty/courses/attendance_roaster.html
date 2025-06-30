@@ -1,0 +1,160 @@
+{% extends 'faculty/layouts/app.html' %}
+{% load static %}
+
+{% block title %}Attendance Roaster{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <h5 class="card-title">
+                            <i class="feather icon-book"></i> <b>Course:</b> {{ course.name|upper }}
+                        </h5>
+                        <p class="card-text">
+                            <i class="feather icon-hash"></i> <b>Course Code:</b> {{ course.course_id }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <p class="card-text">
+                            <i class="feather icon-calendar"></i> <b>Academic Term / Semester:</b> {{ sem_course.semester.semester_name }}
+                        </p>
+                        <p class="card-text">
+                            <i class="feather icon-book-open"></i> <b>Career\Degree:</b> {{ course.program.degree_type }}
+                        </p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Sr no.</th>
+                                <th>Class Date</th>
+                                <th>Day</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Marked</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in attendance_data %}
+                            <tr>
+                                <td>{{ row.sr }}</td>
+                                <td>{{ row.date|date:"d-M-Y" }}</td>
+                                <td>{{ row.day }}</td>
+                                <td>{{ row.from_time }}</td>
+                                <td>{{ row.to_time }}</td>
+                                <td>
+                                    {% if row.marked %}
+                                        <i class="feather icon-check text-success"></i> Marked
+                                    {% else %}
+                                        <i class="feather icon-x text-danger"></i> Pending
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary" data-toggle="modal" data-target="#attendanceModal{{ row.session_id }}">
+                                        <i class="feather icon-edit"></i> Attendance Menu
+                                    </button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="7" class="text-center">No attendance records found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for each attendance session -->
+{% for row in attendance_data %}
+<div class="modal fade" id="attendanceModal{{ row.session_id }}" tabindex="-1" role="dialog" aria-labelledby="attendanceModalLabel{{ row.session_id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attendanceModalLabel{{ row.session_id }}">
+                    Attendance Options - {{ row.date|date:"d-M-Y" }}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="btn-group-vertical w-100">
+                    <!-- Camera-based Attendance -->
+                    <a href="{% url 'camera_attendance' sem_course_id=sem_course.id attendance_id=row.session_id %}" 
+                       class="btn btn-success mb-2">
+                        <i class="feather icon-camera"></i> Take Attendance (Camera)
+                    </a>
+
+                    <!-- Attendance Log -->
+                    <a href="{% url 'attendance_log' %}?sem_course_id={{ sem_course.id }}&date={{ row.date|date:'Y-m-d' }}" 
+                       class="btn btn-info mb-2">
+                        <i class="feather icon-list"></i> View Attendance Log
+                    </a>
+
+                    <!-- Manual Attendance Entry -->
+                    <a href="{% url 'mark_attendance_for_date' sem_course_id=sem_course.id attendance_id=row.session_id %}" 
+                       class="btn btn-warning">
+                        <i class="feather icon-edit"></i> Manual Attendance Entry
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<style>
+    /* Add highlight styles for the attendance menu buttons */
+    .btn-group-vertical .btn:hover,
+    .btn-group-vertical .btn:focus,
+    .btn-group-vertical .btn:active {
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+    
+    /* Add active state for the course menu item */
+    .nav-item a[href*="faculty_cources_index"] {
+        background-color: rgba(115, 103, 240, 0.12);
+        color: #7367f0;
+        font-weight: 500;
+        border-radius: 4px;
+    }
+</style>
+
+<script>
+$(document).ready(function() {
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // Highlight the Courses menu item in the main navigation
+    $('.nav-item a[href*="faculty_cources_index"]').closest('.nav-item').addClass('active');
+    
+    // Add animation effect to attendance option buttons
+    $('.btn-group-vertical .btn').hover(function() {
+        $(this).addClass('active');
+    }, function() {
+        $(this).removeClass('active');
+    });
+});
+</script>
+{% endblock %}

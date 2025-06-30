@@ -1,0 +1,97 @@
+{% extends 'faculty/layouts/app.html' %}
+
+{% block title %}FRS | Courses{% endblock %}
+
+{% load static %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000;
+        background-color: #fff;
+    }
+    .toast-title, .toast-message, .toast-close-button {
+        color: #000;
+    }
+    .course-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        margin-bottom: 20px;
+        border-left: 4px solid #7367F0;
+    }
+    .course-card:hover {
+        transform: translateY(-5px);
+    }
+    .course-title {
+        font-weight: 600;
+        color: #5e5873;
+    }
+    .course-info {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <i class="feather icon-book"></i> My Courses
+                    </h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        {% if error %}
+                            <div class="alert alert-danger">
+                                <i class="feather icon-alert-circle"></i> {{ error }}
+                            </div>
+                        {% elif no_courses %}
+                            <div class="alert alert-info">
+                                <i class="feather icon-info"></i> No courses have been assigned to you yet.
+                            </div>
+                        {% elif courses %}
+                            <div class="row">
+                                {% for item in courses %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card course-card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <i class="feather icon-hard-drive"></i> {{ item.course.sem_course.course.name|upper }}
+                                            </h5>
+                                            <hr>
+                                            <p class="card-text">
+                                                <i class="feather icon-calendar"></i> <b>Semester:</b> {{ item.course.sem_course.semester.semester_name|upper }}
+                                            </p>
+                                            <p>
+                                                <i class="feather icon-bookmark"></i> <b>Schedule:</b> ({{ item.course.schedule|upper }})
+                                            </p>
+                                            <hr>
+                                            <a href="{% url 'attendance_roaster' item.course.sem_course.id %}" class="btn btn-primary">
+                                                <i class="feather icon-edit"></i> Open Roster
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="feather icon-info"></i> No courses found.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<!-- Your JS includes (if needed) -->
+{% endblock %}

@@ -1,0 +1,277 @@
+{% extends 'faculty/layouts/app.html' %}
+
+{% block title %}FRS | Attendance{% endblock %}
+
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+
+<style>
+    .toast {
+        color: #000;
+        background-color: #fff;
+    }
+    .container {
+        padding: 20px;
+    }
+    .attendance-status {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        align-items: center;
+    }
+    .attendance-button.present {
+        border: none;
+        border-radius: 15px 58px 57px 50px;
+        padding: 5px 15px;
+        cursor: pointer;
+        font-size: 16px;
+        color: #fff;
+        transition: background-color 0.3s;
+    }
+    .attendance-button.absent {
+        background-color: #f0a0a0; /* Light red/gray initially */
+        border: none;
+        border-radius: 15px 58px 57px 50px;
+        padding: 5px 15px;
+        cursor: pointer;
+        font-size: 16px;
+        color: #fff;
+        transition: background-color 0.3s;
+    }    
+    .present.marked {
+        background-color: #086908;
+        /* background-color: #ccc; */
+    }
+    .absent.marked {
+        background-color: #ab1414; /* Red for Absent */
+        color: #fff;
+    }
+    .save-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 18px;
+        color: #fff;
+        background-color: blue; /* Blue for Save */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .save-btn:hover {
+        background-color: darkblue; /* Darker blue on hover */
+    }
+        .remarks-input {
+        margin-top: 10px;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        height: 80px; /* Set a default height */
+        resize: vertical; /* Allow vertical resizing only */
+        overflow: auto; /* Allow scrolling if content exceeds */
+    }
+    .mark-all-present {
+        background-color: #086908; /* Green for Mark All Present */
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+    #present-count {
+        color: green; /* Set text color to green for present count */
+        font-weight: bold; /* Optional: make the text bold */
+    }
+
+    #absent-count {
+        color: red; /* Set text color to red for absent count */
+        font-weight: bold; /* Optional: make the text bold */
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Attendance for {{ course_name }} <i class="feather icon-calendar"></i></h4>
+                </div>
+                {% if students %}
+                    <div class="card-content">
+                        <div class="card-body">
+                            <p><Enrolled> <i class="feather icon-user-plus"></i> Enrolled Students: {{students.count}}</h4>
+                            <p><Enrolled> <i class="feather icon-calendar"></i> Attendance Date: {{attendance_date}}</h4>
+                                <div class="d-flex justify-content-end">
+                                    <p class="mx-2">P: <span id="present-count">0</span></p>
+                                    <p>A: <span id="absent-count">0</span></p>
+                                </div>
+                            <div class="d-flex justify-content-start">
+                                <button type="button" class="btn btn-success waves-effect waves-light mt-2 mark-all-present rounded">
+                                    <i class="feather icon-plus-circle"></i> Mark All Present
+                                </button>      
+                            </div>
+                        <form method="POST" action="{% url 'save_attendance' sem_course_id=sem_course_id attendance_id=attendance_id %}" id="attendance-form">
+                            {% csrf_token %}
+                            {% for student in students %}
+                            <div class="attendance-status">
+                                <span>{{ student.name }} ( {{ student.student_id }} )</span>
+                                <span>
+                                    <button type="button" class="attendance-button {% if student.attendance_status == '1' %}present marked{% elif student.attendance_status == '0' %}absent marked{% else %}present{% endif %}" 
+                                            data-student-id="{{ student.enrollment__id }}" data-status="{% if student.attendance_status == '1' %}P{% elif student.attendance_status == '0' %}A{% else %}P{% endif %}">{% if student.attendance_status == '1' %}P{% elif student.attendance_status == '0' %}A{% else %}P{% endif %}</button>
+                                    <input type="hidden" name="attendance_{{ student.enrollment__id }}" value="{% if student.attendance_status == '1' %}1{% elif student.attendance_status == '0' %}0{% else %}1{% endif %}">
+                                </span>
+                            </div>
+                            {% endfor %}
+                            <input type="hidden" name="sem_course_id" value="{{ sem_course_id }}">
+                            <input type="hidden" name="attendance_id" value="{{ attendance_id }}">
+                            <input type="hidden" name="attendance_date" value="{{ attendance_date }}">
+
+                            <!-- <input type="text" name="remarks" class="remarks-input" 
+                                placeholder="Remarks for all students (optional)" /> -->
+                                <textarea name="remarks" class="remarks-input" 
+                                placeholder="Remarks for all students (optional)"></textarea>
+                            
+                            <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light mt-2">Save</button>
+                        </form>                     
+                    </div>
+                    {% else %}
+                    <p class="mx-2 mt-2"> <i class="feather icon-alert-circle text-danger"></i> No students enrolled in this course.</p>
+                {% endif %}                       
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        let attendanceStatus = {};
+        
+        // Initialize attendance status from existing data
+        $('.attendance-button').each(function() {
+            let studentId = $(this).data('student-id');
+            let status = $(this).data('status');
+            attendanceStatus[studentId] = status === 'P' ? 1 : 0;
+        });
+        
+        // Initialize counts correctly
+        let presentCount = 0;
+        let absentCount = 0;
+        
+        // Count each student's initial status
+        $('.attendance-button').each(function() {
+            let status = $(this).data('status');
+            if (status === 'P') {
+                presentCount++;
+            } else {
+                absentCount++;
+            }
+        });
+        
+        // Update the displayed counts
+        $('#present-count').text(presentCount);
+        $('#absent-count').text(absentCount);
+        
+        function updateCounts() {
+            $('#present-count').text(presentCount);
+            $('#absent-count').text(absentCount);
+        }
+
+        $('.attendance-button').click(function() {
+            let studentId = $(this).data('student-id');
+            let currentStatus = $(this).data('status');
+
+            // Toggle attendance status
+            if (currentStatus === 'P') {
+                $(this).text('A').data('status', 'A').removeClass('present').addClass('absent marked');
+                attendanceStatus[studentId] = 0; // Store status as Absent
+                presentCount--; // Decrease present count
+                absentCount++;  // Increase absent count
+            } else {
+                $(this).text('P').data('status', 'P').removeClass('absent').addClass('present marked');
+                attendanceStatus[studentId] = 1; // Store status as Present
+                presentCount++; // Increase present count
+                absentCount--;  // Decrease absent count
+            }
+            updateCounts(); // Update the displayed counts
+        });
+
+
+            $('.mark-all-present').click(function() {
+            $(this).addClass('mark-all-present');
+            $('.attendance-button').each(function() {
+                let studentId = $(this).data('student-id');
+                $(this).text('P').data('status', 'P').removeClass('absent').addClass('present marked');
+                attendanceStatus[studentId] = 1;
+            });
+
+            presentCount = $('.attendance-button').length;
+            absentCount = 0;
+            updateCounts();
+        });
+      
+
+        $('#attendance-form').on('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Prepare data to send
+            const formData = $(this).serializeArray();
+            
+            for (let enrollment__id in attendanceStatus) {
+                formData.push({
+                    name: 'attendance_' + enrollment__id, // Ensure the key is in the right format
+                    value: attendanceStatus[enrollment__id]
+                });
+            }
+
+            // Debugging: Log the data being sent
+            console.log("Form data being sent:", formData);
+            
+            // Send the data using AJAX
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'), // Use form action URL
+                data: formData,
+                success: function(response) {
+                    if (response.status === 'success') { // Change to check for 'status'
+                    toastr.success('Attendance saved successfully!');
+                        // Use the redirect_url from the server response instead of reloading
+                        if (response.redirect_url) {
+                            window.location.href = response.redirect_url;
+                        } else {
+                            // Fallback if redirect_url is not provided
+                            location.reload();
+                        }
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    toastr.error('Error saving attendance: ' + error);
+                }
+            });
+        });
+
+        // Setup CSRF token for AJAX requests
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+            }
+        });
+    });
+</script>
+{% endblock %}

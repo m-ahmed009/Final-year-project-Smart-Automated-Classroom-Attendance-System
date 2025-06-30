@@ -1,0 +1,192 @@
+{% extends 'admin/layouts/app.html' %}
+
+{% block title %}Enrollment | Students{% endblock %}
+
+{% block css %}
+<style>
+    .toast {
+        color: #000;
+        background-color: #fff;
+    }
+
+/* Style for the grid container */
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);  /* 5 columns */
+    gap: 20px;  /* Space between images */
+    margin-top: 10px;
+}
+
+/* Style for each image container */
+.image-grid .form-check {
+    text-align: center;
+}
+
+/* Optional: Adjust the width and height for a consistent image display */
+.image-grid img {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;  /* Optional: To round the edges */
+    box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 4px 4px 8px 0px rgba(0, 0, 0, 0.75);    
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="number-tabs">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Enrollment Students <i class="feather icon-folder-plus"></i></h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'enrollment_create' %}" enctype="multipart/form-data" class="number-tab-steps wizard-circle" id="enrollmentForm">
+                            {% csrf_token %}
+                            <fieldset>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="sem_course">Course Name *</label>
+                                            <select name="sem_course" class="form-control" id="sem_course">
+                                                <option value="">- Select -</option>
+                                                {% for sem_course in sem_courses %}
+                                                    <option value="{{ sem_course.id }}">{{ sem_course.course.name|upper }} - {{ sem_course.sem_course_id }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="student">Student Name *</label>
+                                            <select name="student" class="form-control" id="student">
+                                                <option value="">- Select -</option>
+                                                {% for student in students %}
+                                                    <option value="{{ student.id }}">{{ student.name|upper }} ({{ student.student_id }})</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Student Images Section -->
+                                    <div class="col-sm-12">
+                                        <div class="form-group" id="studentImagesContainer" style="display: none;">
+                                            <label for="images">Student Images *</label>
+                                            <div id="studentImages" class="mt-2"></div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </fieldset>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary mr-1 mb-1 waves-effect waves-light">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+<!-- Include jQuery from a reliable CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    // Setup CSRF token for AJAX requests
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^http:.*/.test(settings.url) && !/^https:.*/.test(settings.url)) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        }
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    $(document).ready(function () {
+    let selectAll = false;  // To track the toggle state
+
+    $('#student').change(function() {
+        const studentId = $(this).val();
+        const imagesContainer = $('#studentImages');
+        imagesContainer.empty();  // Clear previous images
+
+        if (studentId) {
+            $.ajax({
+                url: "{% url 'get_student_images' %}",
+                data: {
+                    'student_id': studentId
+                },
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    console.log('AJAX Response:', data);  // Debugging
+                    if (data.images && data.images.length > 0) {
+                        imagesContainer.append(`                            
+                            <button id="selectAllBtn" class="btn btn-primary"> <i class="feather icon-plus-circle"></i> Select All</button>
+                            <div class="image-grid"></div>
+                        `);  // Add the "Select All" button and container for images
+                        
+                        $.each(data.images, function(index, image) {
+                            $('.image-grid').append(`
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="images" value="${image.id}" id="image${image.id}">
+                                    <label class="form-check-label" for="image${image.id}">
+                                        <img src="/media/${image.url}" alt="Image" style="width: 80px; height: auto;">
+                                    </label>
+                                </div>
+                            `);
+                        });
+
+                        // Show the image container after images are loaded
+                        $('#studentImagesContainer').show();
+
+                        // Add event listener for "Select All" button
+                        $('#selectAllBtn').click(function() {
+                            selectAll = !selectAll;  // Toggle selectAll state
+                            $('.form-check-input').prop('checked', selectAll);  // Check or uncheck all checkboxes
+                            $(this).text(selectAll ? 'Deselect All' : 'Select All');  // Update button text
+                        });
+                    } else {
+                        $('#studentImagesContainer').hide();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error);  // Debugging error response
+                    alert('Error loading images. Please try again.');  // Alert on error
+                }
+            });
+        } else {
+            $('#studentImagesContainer').hide();
+        }
+    });
+});
+
+
+
+</script>
+
+{% endblock %}
+
