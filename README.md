@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Final-year-project-SACAS-Smart-Automated-Classroom-Attendance-System
 
 🚀 Smart Automated Classroom Attendance System – Our Final Year Project Completed! 🧠📸
@@ -77,9 +76,3 @@ All of these belong to the fields of Machine Learning (ML) and Deep Learning (DL
 🎓 This project was not just an academic milestone — it was an end-to-end AI-powered LMS-integrated solution that reflects what the future of education can look like.
 
 🙌 Huge thanks to our amazing mentors and teammates who made this vision a reality.
-
-
-
-=======
-# Final-year-project-Smart-Automated-Classroom-Attendance-System
->>>>>>> 87c8cc41fc58d1b13db1745ba8828b942bd82ab8
